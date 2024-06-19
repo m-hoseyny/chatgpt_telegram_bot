@@ -1,6 +1,19 @@
-available_text_models: ["gpt-3.5-turbo", "gpt-3.5-turbo-16k", "gpt-4-1106-preview", "gpt-4-vision-preview", "gpt-4", "text-davinci-003", "gpt-4o"]
+available_text_models: [ "dolphin-mixtral-8x22b", "gpt-3.5-turbo",  "gpt-4-vision-preview", "gpt-4o",]
 
 info:
+  dolphin-mixtral-8x22b:
+    type: chat_completion
+    name: 🔞Uncensored
+    description: Dolphin 🔞Uncensored is that well-known model. It's <b>fast</b> and <b>cheap</b> and <b>🔞Uncensored</b>. Ideal for erotic talks and english conversations.
+
+    price_per_1000_input_tokens: 0.0015
+    price_per_1000_output_tokens: 0.002
+
+    scores:
+      Smart: 3
+      Fast: 5
+      Cheap: 5
+
   gpt-3.5-turbo:
     type: chat_completion
     name: ChatGPT

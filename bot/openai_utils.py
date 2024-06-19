@@ -7,12 +7,14 @@ import tiktoken
 import openai
 
 
+
+logger = logging.getLogger(__name__)
+
 # setup openai
 openai.api_key = config.openai_api_key
 if config.openai_api_base is not None:
+    print(f'There is another base url {config.openai_api_base}')
     openai.api_base = config.openai_api_base
-logger = logging.getLogger(__name__)
-
 
 OPENAI_COMPLETION_OPTIONS = {
     "temperature": 0.7,
@@ -23,10 +25,12 @@ OPENAI_COMPLETION_OPTIONS = {
     "request_timeout": 60.0,
 }
 
+MODELS_LIST = {"dolphin-mixtral-8x22b",  "gpt-3.5-turbo", "gpt-4o", "gpt-4-vision-preview"}
+
 
 class ChatGPT:
-    def __init__(self, model="gpt-3.5-turbo"):
-        assert model in {"text-davinci-003", "gpt-3.5-turbo-16k", "gpt-3.5-turbo", "gpt-4", "gpt-4o", "gpt-4-1106-preview", "gpt-4-vision-preview"}, f"Unknown model: {model}"
+    def __init__(self, model="dolphin-mixtral-8x22b"):
+        assert model in MODELS_LIST, f"Unknown model: {model}"
         self.model = model
 
     async def send_message(self, message, dialog_messages=[], chat_mode="assistant"):
@@ -37,7 +41,7 @@ class ChatGPT:
         answer = None
         while answer is None:
             try:
-                if self.model in {"gpt-3.5-turbo-16k", "gpt-3.5-turbo", "gpt-4", "gpt-4o", "gpt-4-1106-preview", "gpt-4-vision-preview"}:
+                if self.model in MODELS_LIST:
                     messages = self._generate_prompt_messages(message, dialog_messages, chat_mode)
 
                     r = await openai.ChatCompletion.acreate(
@@ -78,7 +82,7 @@ class ChatGPT:
         answer = None
         while answer is None:
             try:
-                if self.model in {"gpt-3.5-turbo-16k", "gpt-3.5-turbo", "gpt-4","gpt-4o", "gpt-4-1106-preview"}:
+                if self.model in {"dolphin-mixtral-8x22b", "gpt-3.5-turbo-16k", "gpt-3.5-turbo", "gpt-4","gpt-4o", "gpt-4-1106-preview"}:
                     messages = self._generate_prompt_messages(message, dialog_messages, chat_mode)
 
                     r_gen = await openai.ChatCompletion.acreate(
@@ -310,6 +314,9 @@ class ChatGPT:
         elif model == "gpt-4o":
             tokens_per_message = 3
             tokens_per_name = 1
+        elif model == 'dolphin-mixtral-8x22b':
+            tokens_per_message = 4
+            tokens_per_name = -1
         else:
             raise ValueError(f"Unknown model: {model}")
 
@@ -340,10 +347,12 @@ class ChatGPT:
         return n_input_tokens, n_output_tokens
 
     def _count_tokens_from_prompt(self, prompt, answer, model="text-davinci-003"):
-        encoding = tiktoken.encoding_for_model(model)
+        # encoding = tiktoken.encoding_for_model(model)
 
-        n_input_tokens = len(encoding.encode(prompt)) + 1
-        n_output_tokens = len(encoding.encode(answer))
+        # n_input_tokens = len(encoding.encode(prompt)) + 1
+        # n_output_tokens = len(encoding.encode(answer))
+        n_input_tokens = len(prompt)
+        n_output_tokens = len(answer)
 
         return n_input_tokens, n_output_tokens
 
