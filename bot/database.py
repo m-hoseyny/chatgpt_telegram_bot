@@ -54,6 +54,7 @@ class Database:
         }
 
         if not self.check_if_user_exists(user_id):
+            print(f'New User {user_id}')
             self.user_collection.insert_one(user_dict)
 
     def start_new_dialog(self, user_id: int):
